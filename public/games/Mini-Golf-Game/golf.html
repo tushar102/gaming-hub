@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Mini Golf</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="js/mini_golf.js">
+        <link rel="stylesheet" href="css/index.css">
+        <link rel="shortcut icon" href="assets/favicon.ico">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script type="module">
+            import { startGame } from "./js/mini_golf.js";
+            $(document).ready(() =>  {
+                startGame();
+            });
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet">
+        <meta name="theme-color" content="#16437e">
+    </head>
+<body>
+    <header>
+        <img src="assets/flag.png">
+        <h1>Mini Golf</h1>
+    </header>
+    
+    <section>
+        <p id="stroke_label">Strokes: 0</p>
+        <p id="par_label">Par: 0</p>
+    </section>
+    
+    <main id="content_div"></main>
+    
+    <section>
+        <p id="tip_label">Shoot</p>
+    </section>
+    <button id="next_level" disabled="true">Next Level</button>
+</body>
+</html>

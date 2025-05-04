@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hill Climb Racing</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        overflow-x: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      body {
+        background: #87ceeb;
+        font-family: sans-serif;
+      }
+      #canvas {
+        display: block;
+        width: 100%;
+        height: 100vh;
+      }
+      #start-screen,
+      #game-over-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+      }
+      #start-screen h1,
+      #game-over-screen h1 {
+        font-size: 50px;
+        margin-bottom: 20px;
+      }
+      #start-btn,
+      #continue-btn {
+        padding: 15px 30px;
+        font-size: 36px;
+        background: green;
+        color: white;
+        border: 2px solid white;
+        border-radius: 20%;
+        cursor: pointer;
+      }
+      #start-btn:hover,
+      #continue-btn:hover {
+        transform: scale(1.2);
+      }
+      #petrol {
+        position: fixed;
+        top: 3vh;
+        left: 1vw;
+        width: 17vw;
+        height: 7vh;
+        border: 1px solid rgb(71, 70, 70);
+        overflow: hidden;
+        border-radius: 12px;
+      }
+      #petrol-line {
+        background-color: rgb(21, 139, 41);
+        width: 15vw;
+        height: 7vh;
+      }
+      #score1 {
+        position: absolute;
+        top: 2vh;
+        right: 5vw;
+        font-size: 30px;
+        background-color: rgb(79, 61, 28);
+        border-radius: 12px;
+        padding: 8px 12px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #distance {
+        font-size: 30px;
+        position: absolute;
+        top: 3vh;
+        left: 45vw;
+        color: white;
+        background-color: rgba(
+          139,
+          69,
+          19,
+          0.8
+        ); /* Earthy brown with transparency */
+        padding: 2px 20px;
+        border-radius: 10px;
+        border: 2px solid #ffd700; /* Gold border for a shiny effect */
+        font-family: "Arial Black", sans-serif; /* Bold font for emphasis */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+
+      #distance::after {
+        content: "m"; /* Add a unit (meters) */
+        font-size: 20px; /* Smaller font for the unit */
+        color: #ffd700; /* Gold color for the unit */
+        text-shadow: none; /* No shadow on the unit */
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      #distance {
+        animation: pulse 0.5s ease-in-out;
+      }
+      #fuel-image {
+        height: 7vh;
+        width: 5vw;
+        position: absolute;
+        top: 3vh;
+        left: 18vw;
+      }
+      #game-over-screen h2 {
+        font-size: 35px;
+        margin: 10px 0;
+      }
+      #game-over-screen {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="start-screen">
+      <img id="title" src="/images/name.png" alt="Hill Climb Racing" />
+      <button id="start-btn">Start</button>
+    </div>
+    <div id="game-over-screen">
+      <h1 id="fuel">OUT OF FUEL</h1>
+      <h2 id="lastD">Distance: 0</h2>
+      <h2 id="coins">Coins: 0</h2>
+      <button id="continue-btn">Continue</button>
+    </div>
+    <div id="petrol" style="display: none">
+      <div id="petrol-line"></div>
+    </div>
+    <div id="score1" style="display: none">
+      <span>Coins:</span><span id="score">0</span>
+    </div>
+    <img
+      id="fuel-image"
+      src="/images/tank (2).png"
+      alt="petrol"
+      style="display: none"
+    />
+    <h1 id="distance" style="display: none">0</h1>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const c = canvas.getContext("2d");
+      const updateCanvasSize = () => {
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+      };
+      updateCanvasSize();
+
+      let score = 0,
+        count = 0,
+        start = 250;
+      const scoreElement = document.getElementById("score");
+      const distanceElement = document.getElementById("distance");
+      const petrolLine = document.getElementById("petrol-line");
+
+      const images = {
+        car: new Image(),
+        track: new Image(),
+        coin: new Image(),
+        petrol: new Image(),
+        background: new Image(),
+      };
+      images.car.src = "/images/car2.jpg";
+      images.track.src = "/images/track.png";
+      images.coin.src = "/images/coin.png";
+      images.petrol.src = "/images/petrolTanker.png";
+      images.background.src = "/images/888.jpg";
+
+      const sounds = {
+        engine: new Audio("/sounds/engine.mp3"),
+        coinCollect: new Audio("/sounds/coin.mp3"),
+        fuelCollect: new Audio("/sounds/fuel.mp3"),
+        lowFuel: new Audio("/sounds/low_fuel.mp3"),
+        gameOver: new Audio("/sounds/game_over.mp3"),
+        crash: new Audio("/sounds/crash.mp3"), // Add a crash sound
+      };
+      sounds.engine.loop = true;
+      sounds.lowFuel.loop = true;
+      sounds.engine.volume = 0.5;
+      sounds.coinCollect.volume = 0.7;
+      sounds.fuelCollect.volume = 0.7;
+      sounds.lowFuel.volume = 0.4;
+      sounds.gameOver.volume = 0.8;
+      sounds.crash.volume = 0.8;
+
+      let lowFuelPlaying = false,
+        enginePlaying = false,
+        crashPlaying = false,
+        lastEngineRate = 1.5;
+      let gameStarted = false,
+        isPaused = false,
+        lastTimestamp = 0;
+
+      const A = new Array(canvas.width).fill(0);
+      const N = 30,
+        amplitude = 150; // Increased amplitude for steeper hills
+      let layers = Array.from({ length: N }, () => Math.random() * amplitude);
+      const trigno = (a, b, c) => a + b + (a - b) * Math.cos(Math.PI * c);
+      function land(x) {
+        x = x / 300;
+        let fx = Math.floor(x) % N;
+        let nextFx = (fx + 1) % N;
+        return trigno(layers[fx], layers[nextFx], x - Math.floor(x));
+      }
+
+      const cX = 100;
+      let carVelocity = 0,
+        position = 0,
+        carYOffset = 0,
+        carRotation = 0,
+        isFalling = false;
+      const carAcceleration = 0.15,
+        carDeceleration = 0.08,
+        maxCarSpeed = 4.5,
+        gravity = 0.3,
+        bounce = 0.1;
+      const getCarDimensions = () => {
+        const baseWidth = 130,
+          baseHeight = 100;
+        const scaleFactor = Math.min(1, window.innerWidth / 1000);
+        return {
+          width: baseWidth * scaleFactor,
+          height: baseHeight * scaleFactor,
+          wheelRadius: 20 * scaleFactor,
+          bottomOffset: 10 * scaleFactor,
+        };
+      };
+      const getCollectibleSize = () =>
+        Math.min(50, (50 * window.innerWidth) / 1000);
+      const collectibleYOffset = 40;
+
+      let carKeys = { right: { pressed: false }, left: { pressed: false } };
+      function dCalculate() {
+        count += carKeys.right.pressed ? 0.1 : carKeys.left.pressed ? -0.1 : 0;
+        distanceElement.innerHTML = Math.floor(count);
+      }
+
+      let coinDistance = canvas.width,
+        coinDistance1 = canvas.width / 2,
+        coinDistance2 = canvas.width / 4;
+      function drawCoin(x, y) {
+        if (x >= 0 && x <= canvas.width) {
+          const size = getCollectibleSize();
+          c.drawImage(
+            images.coin,
+            x - size / 2,
+            y - collectibleYOffset - size / 2,
+            size,
+            size
+          );
+        }
+      }
+      function drawPetrol(x, y) {
+        if (x >= 0 && x <= canvas.width) {
+          const size = getCollectibleSize();
+          c.drawImage(
+            images.petrol,
+            x - size / 2,
+            y - collectibleYOffset - size / 2,
+            size,
+            size
+          );
+        }
+      }
+
+      function getTerrainAngle(x) {
+        const x1 = Math.max(0, Math.min(Math.floor(x), A.length - 1));
+        const x2 = Math.max(0, Math.min(Math.floor(x + 10), A.length - 1));
+        return Math.atan2(A[x2] - A[x1], 10) || 0;
+      }
+
+      function updateSounds() {
+        if (Math.abs(carVelocity) > 0.1 && !isPaused) {
+          const targetRate = 0.8 + Math.abs(carVelocity) / maxCarSpeed;
+          if (!enginePlaying) {
+            sounds.engine.play();
+            enginePlaying = true;
+          }
+          sounds.engine.playbackRate = targetRate;
+          lastEngineRate = targetRate;
+        } else if (enginePlaying) {
+          sounds.engine.pause();
+          enginePlaying = false;
+        }
+        if (start < 80 && !isPaused && !lowFuelPlaying) {
+          sounds.lowFuel.play();
+          lowFuelPlaying = true;
+        } else if (start >= 80 && lowFuelPlaying) {
+          sounds.lowFuel.pause();
+          lowFuelPlaying = false;
+        }
+        if (isFalling && !crashPlaying && carYOffset > 50) {
+          sounds.crash.play();
+          crashPlaying = true;
+        }
+      }
+
+      function animate(timestamp) {
+        if (!gameStarted) return;
+        const deltaTime = lastTimestamp
+          ? (timestamp - lastTimestamp) / 16.67
+          : 1;
+        lastTimestamp = timestamp;
+
+        if (document.hidden) {
+          isPaused = true;
+          requestAnimationFrame(animate);
+          return;
+        }
+        isPaused = false;
+
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        c.fillStyle = images.background.complete
+          ? c.createPattern(images.background, "repeat")
+          : "#87CEEB";
+        c.fillRect(0, 0, canvas.width, canvas.height);
+
+        c.beginPath();
+        c.moveTo(0, canvas.height);
+        for (let i = 0; i < canvas.width; i++) {
+          let y = canvas.height - land(i + position);
+          A[i] = y;
+          c.lineTo(i, y);
+        }
+        c.lineTo(canvas.width, canvas.height);
+        c.closePath();
+        c.fillStyle = images.track.complete
+          ? c.createPattern(images.track, "repeat")
+          : "#808080";
+        c.fill();
+
+        c.beginPath();
+        c.moveTo(0, canvas.height);
+        for (let i = 0; i < canvas.width; i++) c.lineTo(i, A[i] - 5);
+        c.lineTo(canvas.width, canvas.height);
+        c.closePath();
+        c.fillStyle = "green";
+        c.fill();
+
+        c.beginPath();
+        c.moveTo(0, canvas.height);
+        for (let i = 0; i < canvas.width; i++) c.lineTo(i, A[i] + 10);
+        c.lineTo(canvas.width, canvas.height);
+        c.closePath();
+        c.fillStyle = "#8B4513";
+        c.fill();
+
+        if (carKeys.right.pressed && carVelocity < maxCarSpeed)
+          carVelocity += carAcceleration * deltaTime;
+        else if (carKeys.left.pressed && carVelocity > -maxCarSpeed)
+          carVelocity -= carAcceleration * deltaTime;
+        else
+          carVelocity -= Math.sign(carVelocity) * carDeceleration * deltaTime;
+        if (Math.abs(carVelocity) > 0) start -= 0.1 * deltaTime;
+
+        const {
+          width: carWidth,
+          height: carHeight,
+          wheelRadius,
+          bottomOffset,
+        } = getCarDimensions();
+        const terrainYAtCar =
+          A[Math.floor(cX + carWidth / 2)] || canvas.height / 2;
+        const terrainAngle = getTerrainAngle(cX + carWidth / 2);
+        let targetY = terrainYAtCar - carHeight + wheelRadius - bottomOffset;
+
+        // Falling and crash detection
+        if (Math.abs(terrainAngle) > 0.7 && carVelocity < 0) {
+          // Steep downhill
+          isFalling = true;
+          carYOffset += gravity * deltaTime * 10;
+          carRotation += 0.05 * deltaTime; // Simulate spinning
+          if (carYOffset > 50) {
+            // Crash if fallen too far
+            gameOver("CRASHED!");
+            return;
+          }
+        } else {
+          isFalling = false;
+          carYOffset = Math.max(0, carYOffset - gravity * deltaTime * 5);
+          carRotation = Math.max(0, carRotation - 0.02 * deltaTime);
+        }
+        const carY = targetY + carYOffset;
+
+        updateSounds();
+        position += carVelocity * deltaTime;
+        const h1 =
+          carVelocity > 0
+            ? 3 * deltaTime
+            : carVelocity < 0
+            ? -3 * deltaTime
+            : 1;
+
+        c.save();
+        c.translate(cX + carWidth / 2, carY + carHeight / 2);
+        c.rotate(terrainAngle + carRotation);
+        if (images.car.complete)
+          c.drawImage(
+            images.car,
+            -carWidth / 2,
+            -carHeight / 2,
+            carWidth,
+            carHeight
+          );
+        c.restore();
+
+        coinDistance -= h1;
+        coinDistance1 -= h1;
+        coinDistance2 -= h1;
+        if (coinDistance < -50)
+          coinDistance = canvas.width + Math.random() * 200;
+        if (coinDistance1 < -50)
+          coinDistance1 = canvas.width + Math.random() * 200;
+        if (coinDistance2 < -50)
+          coinDistance2 = canvas.width + Math.random() * 200;
+
+        drawCoin(coinDistance, A[Math.floor(coinDistance) % A.length]);
+        drawCoin(coinDistance1, A[Math.floor(coinDistance1) % A.length]);
+        drawPetrol(coinDistance2, A[Math.floor(coinDistance2) % A.length]);
+
+        const collectionSize = getCollectibleSize(),
+          collisionDistance = collectionSize * 0.7;
+        const carTerrainY = A[Math.floor(cX + carWidth / 2) % A.length];
+        if (
+          Math.abs(coinDistance - (cX + carWidth / 2)) < collisionDistance &&
+          Math.abs(A[Math.floor(coinDistance) % A.length] - carTerrainY) < 80
+        ) {
+          coinDistance = canvas.width + Math.random() * 200;
+          score += 50;
+          sounds.coinCollect.currentTime = 0;
+          sounds.coinCollect.play();
+        }
+        if (
+          Math.abs(coinDistance1 - (cX + carWidth / 2)) < collisionDistance &&
+          Math.abs(A[Math.floor(coinDistance1) % A.length] - carTerrainY) < 80
+        ) {
+          coinDistance1 = canvas.width + Math.random() * 200;
+          score += 50;
+          sounds.coinCollect.currentTime = 0;
+          sounds.coinCollect.play();
+        }
+        if (
+          Math.abs(coinDistance2 - (cX + carWidth / 2)) < collisionDistance &&
+          Math.abs(A[Math.floor(coinDistance2) % A.length] - carTerrainY) < 80
+        ) {
+          coinDistance2 = canvas.width + Math.random() * 200;
+          petrolLine.style.backgroundColor = "rgb(21, 139, 41)";
+          start = 250;
+          sounds.fuelCollect.currentTime = 0;
+          sounds.fuelCollect.play();
+          if (lowFuelPlaying) {
+            sounds.lowFuel.pause();
+            lowFuelPlaying = false;
+          }
+        }
+
+        scoreElement.innerHTML = score;
+        dCalculate();
+        requestAnimationFrame(animate);
+      }
+
+      let PBar;
+      function startGame() {
+        document.getElementById("start-screen").style.display = "none";
+        ["petrol", "score1", "fuel-image", "distance"].forEach(
+          (id) => (document.getElementById(id).style.display = "block")
+        );
+        gameStarted = true;
+        PBar = setInterval(() => {
+          if (!isPaused && gameStarted) {
+            start -= 5;
+            if (start < 150 && start > 80)
+              petrolLine.style.backgroundColor = "#FFFF00";
+            if (start < 80) petrolLine.style.backgroundColor = "#FF0000";
+            if (start < -2) {
+              clearInterval(PBar);
+              gameOver("OUT OF FUEL");
+            }
+            petrolLine.style.width = start + "px";
+          }
+        }, 500);
+        requestAnimationFrame(animate);
+      }
+
+      function gameOver(reason) {
+        gameStarted = false;
+        Object.values(sounds).forEach((sound) => {
+          sound.pause();
+          sound.currentTime = 0;
+        });
+        sounds.gameOver.play();
+        document.getElementById("game-over-screen").style.display = "flex";
+        document.getElementById("fuel").innerHTML = reason;
+        document.getElementById("lastD").innerHTML = `Distance: ${Math.floor(
+          count
+        )}`;
+        document.getElementById("coins").innerHTML = `Coins: ${score}`;
+        ["petrol", "score1", "fuel-image", "distance"].forEach(
+          (id) => (document.getElementById(id).style.display = "none")
+        );
+      }
+
+      document.getElementById("start-btn").addEventListener("click", startGame);
+      document.getElementById("continue-btn").addEventListener("click", () => {
+        document.getElementById("game-over-screen").style.display = "none";
+        score = 0;
+        count = 0;
+        start = 250;
+        coinDistance = canvas.width;
+        coinDistance1 = canvas.width / 2;
+        coinDistance2 = canvas.width / 4;
+        carVelocity = 0;
+        position = 0;
+        carYOffset = 0;
+        carRotation = 0;
+        isFalling = false;
+        crashPlaying = false;
+        startGame();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") carKeys.right.pressed = true;
+        if (e.key === "ArrowLeft") carKeys.left.pressed = true;
+      });
+      window.addEventListener("keyup", (e) => {
+        if (e.key === "ArrowRight") carKeys.right.pressed = false;
+        if (e.key === "ArrowLeft") carKeys.left.pressed = false;
+      });
+      window.addEventListener("resize", () => {
+        updateCanvasSize();
+        A.length = 0;
+        A.push(...new Array(canvas.width).fill(0));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,150 @@
+/* Variables */
+:root {
+    --navy: #16437e;
+    --sky: #97e7f5;
+    --cyan: #34aad1;
+    --green: #7ED348;
+}
+
+/* Background movement animation */
+@keyframes slide {
+    0% {
+        background-position: 0px 0px;
+    }
+    100% {
+        background-position: 512px 256px;
+    }
+}
+
+/* Text Styling */
+table, p, h1, button {
+    font-family: "Fredoka", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+h1 {
+    color: #97e7f5;
+    font-weight: 700;
+    text-shadow: 0.05em 0.05em var(--cyan);
+}
+
+button {
+    font-weight: 800;
+}
+
+/* Main Content */
+body {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Vertically center items */
+    margin: 0; /* Remove default margin */
+    background-image: url("../assets/background.png");
+    background-color: var(--cyan);
+    height: 100vh;
+    animation: slide 10s linear infinite;
+}
+
+header {
+    width: 100vw;
+    display: flex;
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Vertically center items */
+    background-color : var(--navy);
+}
+
+canvas {
+    transition: filter 1s;
+    border: 5px solid var(--navy);
+    border-radius: 5px;
+    background-color: var(--green);
+    object-fit: contain;
+    filter : brightness(0%);
+    max-width: 100%;
+    touch-action: none;
+}
+
+section {
+    background-color : var(--navy);
+    color: white;
+    border: 5px solid var(--navy);
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+}
+
+#content_div {
+    /* Contains the canvas or table depending on game state */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    max-width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Table */
+
+table {
+    margin: auto;
+    background-color: var(--sky);
+    color: var(--navy);
+    border-collapse: collapse;
+    border-radius: 5px;
+    text-align: center;
+    max-width: 500px;
+    width: 85vw;
+    border: 5px solid var(--navy);
+}
+
+th, td {
+    min-width: 20px;
+}
+
+th, td {
+    border: 3px solid var(--navy);
+}
+
+/* Turn off animation if prefers reduces motion */
+@media (prefers-reduced-motion: reduce) {
+    body {
+        animation: none;
+    }
+}
+
+/* Button */
+button {
+    background-color : var(--sky);
+    color: var(--navy);
+    border: 5px solid var(--navy);
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+button:active {
+    background-color: var(--cyan);
+}
+button:disabled {
+    background-color : gray;
+    color: black;
+    border: 5px solid gray;
+    cursor: not-allowed;
+}
+button:disabled:active {
+    background-color : darkgray;
+}
+
+/* Misc. Components */
+p {
+    margin:0;
+    padding:0;
+}
+img {
+    width: 40px;
+    height: 40px;
+}

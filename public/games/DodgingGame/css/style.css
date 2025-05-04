@@ -1,0 +1,146 @@
+
+@import url(https://fonts.googleapis.com/css?family=Exo:100);
+
+@keyframes bg-scrolling-reverse {
+  100% {
+    background-position: -50px -50px;
+  }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+div#inner-container {
+    margin:  0% auto;
+    width: 470px;
+}
+
+div#joke-container {
+    background-color: black;
+    padding: 10px;
+    opacity: .45;
+    font-weight: 300;
+    user-select: text;
+}
+
+p::first-letter {
+    text-transform: uppercase;
+}
+
+p#joke {
+    margin: 0;
+    padding: 10px;
+    color: rgb(255, 203, 60);
+}
+
+canvas#game-canvas {
+    border: 15px solid;
+    border-color: rgba(0, 0, 0, 0.45);
+    width: ;
+}
+
+html, body {
+    margin: 0 auto;
+    height: 100vh;
+}
+
+body {
+    background: url("../images/background.png") repeat;
+}
+
+body.dark-mode {
+    background: url("../images/background-dark.png") repeat;
+}
+
+body {
+    animation: bg-scrolling-reverse 1.5s infinite;
+    animation-timing-function: linear;
+    font: 20px/1.5 exo, "segoe ui", helvetica, arial, sans-serif;
+    text-align: center;
+    color: rgb(223, 183, 73);
+    user-select: none;
+    transition: .5s linear;
+}
+
+header > p {
+    color: rgba(97, 58, 0, 0.45);
+    transition: 1s;
+}
+
+header.dark-mode > p {
+    color: rgba(223, 183, 73, 0.75);
+}
+
+header > p {
+    margin: 0;
+    padding: 40px;
+    font-size: 4.5rem;
+    font-weight: 100;
+}
+
+#switch{
+    top: 6px;
+    right: 6px;
+    width: 75px;
+    height: 40px;
+}
+
+.toggle-dark-mode{
+    position: absolute;
+    transition: border-color .6s  ease-out;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.35);
+    border: 2px solid;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.toggle-button{
+    position: absolute;
+    inset: 4px;
+    width: 28px;
+
+    cursor: pointer;
+    transition: all .3s .2s;
+}
+
+.on-status .toggle-button {
+    inset: 3px 3px 3px;
+    width: 65px;
+    background-color: rgb(23, 37, 44);
+    transition: all .2s;
+}
+
+.on {
+    position: absolute;
+    inset: 0;
+    line-height: 38px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #00000000;
+}
+
+.on-status .on {
+    color: rgb(59, 106, 125);
+    transition: color .3s .15s ;
+}
+
+.off{
+    position: absolute;
+    right: 10%;
+    line-height: 38px;
+    font-size: 16px;
+    cursor: pointer;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Car Racing Game - Controls Update</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="loading-screen">Loading...</div>
+    <div id="container"></div>
+
+    <div id="ui-container">
+      <div id="score">Score: 0</div>
+      <div id="speed-indicator">Speed: 0</div>
+    </div>
+
+    <div id="game-over">GAME OVER!<span>Click to Play Again</span></div>
+
+    
+    <audio id="engine-sound" loop>
+      <source src="./car-racingsound.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+    <audio id="brake-sound">
+      <source
+        src="https://freesound.org/data/previews/423/423873_2280633-lq.mp3"
+        type="audio/mpeg"
+      />
+      Your browser does not support the audio element.
+    </audio>
+    <audio id="crash-sound">
+      <source src="./game-over.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

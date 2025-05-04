@@ -1,0 +1,151 @@
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.bg {
+    background-image: url("../resources/images/big-background-green.png");
+    height: 100vh;
+    width: 100vw;
+    filter: blur(5px);
+    -webkit-filter: blur(px);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#board {
+    background-image: url("../resources/images/game-background-mountains-green.png");
+    background-size: cover;
+    width: 60vh;
+    height: 90vh;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border: 4.8vh solid transparent;
+    border-image: url("../resources/images/border-image.png") 100 stretch;   
+}
+
+#sign-board {
+    bottom: 2vh;
+    left: 2vh;
+    height: 15vh;
+    width: 16vh;
+    text-align: center;
+    color: #ffeb13;
+    font-family: 'Chewy', cursive;
+    font-size: 2.2vh;
+    line-height: 3vh;
+    text-shadow: 0px 2px 0px rgba(255,255,255,.7), 0px -2px 0px rgba(0,0,0,.7);
+    padding-top: 3vh;
+    background-image: url("../resources/images/sign-board.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+#message-box {
+    width: 0;
+    height: 0;
+    backdrop-filter: blur(0.5vh);
+    z-index: 1000;
+    position: absolute;
+}
+
+.message-board {
+    width: 40vh;
+    height: 27vh;
+    text-align: center;
+    color: #ffeb13;
+    font-family: 'Chewy', cursive;
+    font-size:5.5vh;
+    text-shadow: 0px 2px 0px rgba(255,255,255,.7), 0px -2px 0px rgba(0,0,0,.7);
+    padding-top: 10vh;
+    background-image: url("../resources/images/message-box-background.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.game-button {
+    width: 16vh;
+    height: 5vh;
+    margin-top: 2vh;
+    margin-left: auto;
+    margin-right: auto;
+    left: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: 0;
+}
+
+.game-button:active {
+    transform: translateY(0.3vh);
+}
+
+.restart-button {
+    background-image: url("../resources/images/restart-button-background.png");   
+}
+
+.play-button {
+       background-image: url("../resources/images/play-button-background.png");  
+}
+
+.next-button {
+   background-image: url("../resources/images/next-button-background.png");
+}
+
+.music-button {
+    bottom: 3vh;
+    height: 4.5vh;
+    width: 4.5vh;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+.music-button:active {
+    transform: translateY(0.3vh);
+}
+
+#sound-on-button {
+    right: 2vh;
+    background-image: url("../resources/images/sound-on-button.png");    
+}
+
+#sound-off-button {
+    right: 7vh;   
+    background-image: url("../resources/images/sound-off-button.png");    
+}
+
+.bubble {
+    background-size: cover;
+    position: absolute;
+    animation-name: scale-in;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.bubble-pink {
+    background-image: url("../resources/images/furry-balls-pink.png");
+}
+
+.bubble-green{
+    background-image: url("../resources/images/furry-balls-green.png");
+}
+
+.bubble-yellow{
+    background-image: url("../resources/images/furry-balls-yellow.png");
+}
+
+.bubble-blue{
+    background-image: url("../resources/images/furry-balls-blue.png");
+}
